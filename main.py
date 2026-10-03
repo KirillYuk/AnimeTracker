@@ -52,12 +52,17 @@ async def handle_message(message:Message):
     
     episodes = anime['episodes'] or 'Unknown'
     score = anime['averageScore'] or 'No rating'
+    cover_url = anime['coverImage']['extraLarge']
     
-    await message.answer(
+    await message.answer_photo(
+        photo=cover_url,
+        caption=(
         f'<b>{title_english}</b>\n'
         f'<i>{title_romaji}</i>\n\n'
         f'⭐Score: {score / 10 if score != 'No rating' else score}/10\n'
-        f'🎬Episodes: {episodes}',
+        f'🎬Episodes: {episodes}\n'
+        f'<a href="https://anilist.co/anime/{anime['id']}">📚AniList</a>'
+        ),
         parse_mode='HTML'
     )
     
@@ -73,6 +78,10 @@ async def search_anime(title:str):
             }
             episodes
             averageScore
+            coverImage {
+                large
+                extraLarge
+            }
         }
     }
     '''
