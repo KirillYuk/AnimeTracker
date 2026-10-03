@@ -9,6 +9,8 @@ from dotenv import load_dotenv
 load_dotenv()
 
 BOT_TOKEN = os.getenv('BOT_TOKEN')
+if BOT_TOKEN is None:
+    raise ValueError('BOT_TOKEN is not set')
 
 bot = Bot(token=BOT_TOKEN)
 dp = Dispatcher()
@@ -16,7 +18,7 @@ dp = Dispatcher()
 main_keyboard = ReplyKeyboardMarkup(
     keyboard=[
         [
-            KeyboardButton(text='🔎Serch anime'),
+            KeyboardButton(text='🔎 Search anime'),
         ],
     ],
     resize_keyboard=True,
@@ -32,9 +34,12 @@ async def start(message: Message):
 
 @dp.message()
 async def handle_message(message:Message):
-    if message.text == '🔎Serch anime':
+    if message.text == '🔎 Search anime':
         await message.answer('Enter title')
+        return
+    await message.answer(f'You entered: {message.text}')
     
+
 async def main():
     await dp.start_polling(bot)
     
