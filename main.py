@@ -42,13 +42,17 @@ async def handle_message(message:Message):
     if not message.text:
         return
     
+    search_message = await message.answer('Searching...')
+    
     anime = await search_anime(message.text)
     if anime is None:
-        await message.answer('Anime not found')
+        await search_message.edit_text('Anime not found')
         return
+    await search_message.delete()
     
     title_english = anime['title']['english'] or anime['title']['romaji']
     title_romaji = anime['title']['romaji']
+    title_native = anime['title']['native']
     
     episodes = anime['episodes'] or 'Unknown'
     score = anime['averageScore'] or 'No rating'
@@ -58,7 +62,8 @@ async def handle_message(message:Message):
         photo=cover_url,
         caption=(
         f'<b>{title_english}</b>\n'
-        f'<i>{title_romaji}</i>\n\n'
+        f'<i>{title_romaji}</i>\n'
+        f'<i>{title_native}</i>\n\n'
         f'⭐Score: {score / 10 if score != 'No rating' else score}/10\n'
         f'🎬Episodes: {episodes}\n'
         f'<a href="https://anilist.co/anime/{anime['id']}">📚AniList</a>'
@@ -75,6 +80,7 @@ async def search_anime(title:str):
             title {
                 romaji
                 english
+                native
             }
             episodes
             averageScore
